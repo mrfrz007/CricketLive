@@ -1,0 +1,25 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav mode="side" opened position="end" class="sidenav">
+    <nav>
+      <button mat-icon-button matTooltip="Home" routerLink="/home" (click)="showComingSoonMessage()">
+        <mat-icon>home</mat-icon>
+      </button>
+
+      <button mat-icon-button matTooltip="Matches" routerLink="/matches" (click)="showComingSoonMessage()">
+        <mat-icon>sports_soccer</mat-icon>
+      </button>
+
+      <button mat-icon-button matTooltip="My Bets" routerLink="/my-bets" (click)="showComingSoonMessage()">
+        <mat-icon>attach_money</mat-icon>
+      </button>
+
+      <button mat-icon-button matTooltip="Profile" routerLink="/profile" (click)="showComingSoonMessage()">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+
+      <button mat-icon-button matTooltip="Logout" (click)="showComingSoonMessage()">
+        <mat-icon>exit_to_app</mat-icon>
+      </button>
+    </nav>
+  </mat-sidenav>
+</mat-sidenav-container>
