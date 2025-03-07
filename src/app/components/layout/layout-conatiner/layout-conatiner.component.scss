@@ -2,22 +2,22 @@
     height: 100vh;
   }
   
-  .main-content {
-    padding: 10px 15%;  // Use percentage instead of fixed pixels
-    overflow-y: auto;
+  // .main-content {
+  //   // padding: 10px 15%;  // Use percentage instead of fixed pixels
+  //   overflow-y: auto;
   
-    @media (max-width: 1200px) {
-      padding: 10px 10%;  // Reduce padding for medium screens
-    }
+  //   @media (max-width: 1200px) {
+  //     padding: 10px 10%;  // Reduce padding for medium screens
+  //   }
   
-    @media (max-width: 768px) {
-      padding: 10px 5%;  // Even smaller padding for tablets
-    }
+  //   @media (max-width: 768px) {
+  //     padding: 10px 5%;  // Even smaller padding for tablets
+  //   }
   
-    @media (max-width: 480px) {
-      padding: 10px 2%;  // Minimal padding for mobile screens
-    }
-  }
+  //   @media (max-width: 480px) {
+  //     padding: 10px 2%;  // Minimal padding for mobile screens
+  //   }
+  // }
   .sidenav-container {
     display: flex;
   }
