@@ -10,6 +10,13 @@ export class MatchesService {
   public baseUrl = 'https://bettingapp-nodejs.onrender.com/api';
   constructor(public http: HttpClient) {}
 
+  /**
+   * Fetches live cricket matches from the CricAPI.
+   *
+   * @returns An Observable containing the current matches data.
+   *          In case of an error, the Observable will contain the error.
+   */
+
   getLiveMatches() {
     return this.http
       .get(
