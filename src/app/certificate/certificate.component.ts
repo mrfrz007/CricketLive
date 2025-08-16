@@ -10,7 +10,6 @@ import { debounceTime, Subject } from 'rxjs';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './certificate.component.html',
-  styleUrls: ['./certificate.component.scss']
 })
 export class CertificateComponent {
   participantName: string = '';
@@ -38,17 +37,24 @@ export class CertificateComponent {
 
     this.isGenerating = true;
     const certificateElement = document.getElementById('certificate-wrapper');
+    const nameElement = document.getElementById('participant-name-preview');
 
-    if (certificateElement) {
+    if (certificateElement && nameElement) {
+      const originalClasses = nameElement.className;
+      // Temporarily apply a fixed, large font size for PDF rendering
+      nameElement.className = 'text-xs md:text-2xl lg:text-3xl';
+
       try {
+        // A short delay helps ensure the DOM updates before the canvas is rendered
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
         const canvas = await html2canvas(certificateElement, {
-          scale: 3, // Increase scale for better quality
+          scale: 5, // Increase scale for better quality
           useCORS: true,
         });
 
         const imgData = canvas.toDataURL('image/png');
 
-        // Determine PDF orientation based on image dimensions
         const imgWidth = canvas.width;
         const imgHeight = canvas.height;
         const orientation = imgWidth > imgHeight ? 'l' : 'p';
@@ -61,10 +67,12 @@ export class CertificateComponent {
         console.error('Error generating PDF:', error);
         alert('Sorry, an error occurred while generating the PDF.');
       } finally {
+        // IMPORTANT: Restore the original responsive classes after PDF generation
+        nameElement.className = originalClasses;
         this.isGenerating = false;
       }
     } else {
-      console.error('Certificate element not found');
+      console.error('Certificate or name element not found');
       this.isGenerating = false;
     }
   }
