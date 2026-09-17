@@ -81,6 +81,7 @@ export class AppComponent implements OnDestroy {
   quizScore = 0;
   quizFeedback: string | null = null;
   quizLocked = false;
+  quizAnswers: { prompt: string; answer: string; correct: boolean }[] = [];
   complimentIndex = 0;
   complimentSpinning = false;
   complimentSpun = false;
@@ -258,6 +259,9 @@ Always`;
     'Forever us',
   ];
 
+  /** WhatsApp number without + or spaces */
+  readonly whatsappNumber = '917463904786';
+
   private letterTimer: ReturnType<typeof setInterval> | null = null;
   private complimentTimer: ReturnType<typeof setInterval> | null = null;
   private catcherTimer: ReturnType<typeof setInterval> | null = null;
@@ -428,6 +432,13 @@ Always`;
       this.letterVisibleChars = 0;
       this.typeLetter();
     }
+    if (id === 'quiz') {
+      this.quizIndex = 0;
+      this.quizScore = 0;
+      this.quizAnswers = [];
+      this.quizFeedback = null;
+      this.quizLocked = false;
+    }
     if (id === 'catcher') {
       this.catcherScore = 0;
       this.catcherHearts = [];
@@ -515,6 +526,14 @@ Always`;
     const current = this.quiz[this.quizIndex];
     this.quizLocked = true;
     const correct = optionIndex === current.correctIndex;
+    this.quizAnswers = [
+      ...this.quizAnswers,
+      {
+        prompt: current.prompt,
+        answer: current.options[optionIndex],
+        correct,
+      },
+    ];
     if (correct) {
       this.quizScore += 1;
       this.quizFeedback = 'Exactly. You know me.';
@@ -526,6 +545,66 @@ Always`;
       this.quizLocked = false;
       this.quizIndex += 1;
     }, 900);
+  }
+
+  sendWhatsAppAnswers(): void {
+    const message = this.buildAnswersMessage();
+    const url = `https://wa.me/${this.whatsappNumber}?text=${encodeURIComponent(
+      message
+    )}`;
+    window.open(url, '_blank');
+  }
+
+  private buildAnswersMessage(): string {
+    const lines: string[] = [
+      'MY_Dear_one — answers from Syed Rukaiya 💕',
+      '',
+      'Love question: She said YES 💖',
+      `Quiz score: ${this.quizScore}/${this.quiz.length}`,
+    ];
+
+    if (this.quizAnswers.length) {
+      lines.push('', 'Quiz answers:');
+      this.quizAnswers.forEach((q, i) => {
+        lines.push(
+          `${i + 1}. ${q.prompt}`
+        );
+        lines.push(
+          `   → ${q.answer}${q.correct ? ' ✓' : ''}`
+        );
+      });
+    }
+
+    const promises = [...this.acceptedPromises]
+      .map((i) => this.promises[i])
+      .filter(Boolean);
+    if (promises.length) {
+      lines.push('', 'Promises she accepted:');
+      promises.forEach((p) => lines.push(`• ${p}`));
+    }
+
+    const adventures = [...this.selectedAdventures]
+      .map((i) => this.adventures[i]?.title)
+      .filter(Boolean);
+    if (adventures.length) {
+      lines.push('', 'Future adventures she picked:');
+      adventures.forEach((a) => lines.push(`• ${a}`));
+    }
+
+    lines.push(
+      '',
+      `Fortunes opened: ${this.openedFortunes.size}`,
+      `Scratch cards revealed: ${this.scratchedCards.size}`,
+      `Hearts caught: ${this.catcherScore}`,
+      `Wheel prize: ${this.wheelPrize || '—'}`,
+      `Compliment spun: ${
+        this.complimentSpun ? this.compliments[this.complimentIndex] : '—'
+      }`,
+      '',
+      'Sent from MY_Dear_one ✨'
+    );
+
+    return lines.join('\n');
   }
 
   spinCompliment(): void {
