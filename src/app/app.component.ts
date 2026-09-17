@@ -142,7 +142,7 @@ Always`;
     {
       src: 'assets/photos/03.jpg',
       title: 'Cake & curls',
-      caption: 'Birthday soft. Henna pretty. Hair still the main character.',
+      caption: 'Birthday soft. Cutipe and pretty. Hair is still the main character.',
     },
     {
       src: 'assets/photos/04.jpg',
