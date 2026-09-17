@@ -1,6 +1,360 @@
-<div class="bg-gray-100 min-h-screen">
-  <app-header></app-header>
-  <main class="container mx-auto p-4 md:p-8">
-    <app-certificate></app-certificate>
+<div class="experience" [attr.data-stage]="stage.id">
+  <audio #bgMusic preload="auto" loop playsinline>
+    <source src="assets/audio/romantic.wav" type="audio/wav" />
+  </audio>
+
+  <div class="atmosphere" aria-hidden="true">
+    <span class="orb orb-a"></span>
+    <span class="orb orb-b"></span>
+    <span class="orb orb-c"></span>
+    <div class="heart-rain">
+      <span
+        *ngFor="let heart of hearts"
+        class="rain-heart"
+        [style.left.%]="heart.left"
+        [style.animationDelay.s]="heart.delay"
+        [style.width.px]="heart.size"
+        [style.height.px]="heart.size"
+      ></span>
+    </div>
+    <div class="confetti-layer" *ngIf="stage.id === 'declaration'">
+      <span
+        *ngFor="let piece of confetti"
+        class="confetti"
+        [style.left.%]="piece.left"
+        [style.animationDelay.s]="piece.delay"
+        [style.background]="piece.color"
+      ></span>
+    </div>
+  </div>
+
+  <header class="topbar" *ngIf="stage.id !== 'welcome'">
+    <div class="topbar-row">
+      <span class="top-brand">{{ brand }}</span>
+      <div class="top-actions">
+        <button type="button" class="music-btn" (click)="toggleMusic()" [attr.aria-label]="musicOn ? 'Mute music' : 'Play music'">
+          {{ musicOn ? '♫ On' : '♫ Off' }}
+        </button>
+        <span class="top-step">{{ stageIndex + 1 }}/{{ stages.length }}</span>
+      </div>
+    </div>
+    <div class="progress" aria-hidden="true">
+      <span class="progress-fill" [style.width.%]="progress"></span>
+    </div>
+    <p class="stage-chip">
+      <span>{{ stage.icon }}</span> {{ stage.label }}
+    </p>
+  </header>
+
+  <main class="stage-shell">
+    <!-- 1 Welcome -->
+    <section class="stage stage-welcome" *ngIf="stage.id === 'welcome'">
+      <p class="brand">{{ brand }}</p>
+      <h1 class="headline">For Syed Rukaiya</h1>
+      <p class="support">
+        A little tease, a few truths, and a letter made just for you.
+      </p>
+      <div class="hero-photo-wrap">
+        <img
+          class="hero-photo"
+          [src]="welcomePhoto"
+          alt="Syed Rukaiya"
+        />
+      </div>
+      <p class="music-note">Music starts when you begin — you can mute anytime.</p>
+    </section>
+
+    <!-- 2 Love Question -->
+    <section class="stage" *ngIf="stage.id === 'question'">
+      <h1 class="headline">{{ questionCopy.title }}</h1>
+      <p class="support">{{ questionCopy.subtitle }}</p>
+      <p class="tease" *ngIf="noFleeCount > 2">
+        Running away? Cute. Your smile already said yes.
+      </p>
+      <div class="playground" #playground>
+        <button type="button" class="btn btn-yes" (click)="onYes()">
+          {{ questionCopy.yes }}
+        </button>
+        <button
+          #noBtn
+          type="button"
+          class="btn btn-no"
+          [class.is-fleeing]="noFleeCount > 0"
+          [style.left.px]="noFleeCount > 0 ? noOffset.x : null"
+          [style.top.px]="noFleeCount > 0 ? noOffset.y : null"
+          [style.position]="noFleeCount > 0 ? 'absolute' : 'relative'"
+          (mouseenter)="fleeNo($event)"
+          (touchstart)="fleeNo($event)"
+          (click)="fleeNo($event)"
+        >
+          {{ questionCopy.no }}
+        </button>
+      </div>
+    </section>
+
+    <!-- 3 Letter -->
+    <section class="stage" *ngIf="stage.id === 'letter'">
+      <h1 class="headline">Your letter</h1>
+      <p class="support">For Syed Rukaiya — smile, eyes, curls, and that rare heart.</p>
+      <article class="letter" (click)="skipTyping()">
+        <pre class="letter-body">{{ typedLetter }}<span class="caret" *ngIf="!letterDone"></span></pre>
+        <p class="hint" *ngIf="!letterDone">Tap to finish typing</p>
+      </article>
+    </section>
+
+    <!-- 4 Photos -->
+    <section class="stage" *ngIf="stage.id === 'photos'">
+      <h1 class="headline">Curl gallery</h1>
+      <p class="support">
+        {{ photoIndex + 1 }}/{{ photos.length }} — swipe through my favorite evidence.
+      </p>
+      <div class="photo-frame">
+        <img
+          class="photo-img"
+          [src]="photos[photoIndex].src"
+          [alt]="photos[photoIndex].title"
+        />
+        <div class="photo-meta">
+          <strong>{{ photos[photoIndex].title }}</strong>
+          <p class="photo-caption">{{ photos[photoIndex].caption }}</p>
+        </div>
+      </div>
+      <div class="photo-dots" aria-hidden="true">
+        <span
+          *ngFor="let photo of photos; let i = index"
+          class="dot"
+          [class.active]="i === photoIndex"
+        ></span>
+      </div>
+      <div class="row-actions">
+        <button type="button" class="btn btn-ghost" (click)="prevPhoto()" [disabled]="photoIndex === 0">
+          Back
+        </button>
+        <button
+          type="button"
+          class="btn btn-soft"
+          (click)="nextPhoto()"
+          [disabled]="photoIndex >= photos.length - 1"
+        >
+          Next curl
+        </button>
+      </div>
+    </section>
+
+    <!-- 5 Reasons -->
+    <section class="stage" *ngIf="stage.id === 'reasons'">
+      <h1 class="headline">Reasons I love you</h1>
+      <p class="support">Smile, eyes, curls, kindness — tap to reveal.</p>
+      <ul class="reason-list">
+        <li
+          *ngFor="let reason of reasons; let i = index"
+          class="reason-item"
+          [class.visible]="i <= reasonIndex"
+        >
+          <span class="reason-num">{{ i + 1 }}</span>
+          <span>{{ i <= reasonIndex ? reason : '…' }}</span>
+        </li>
+      </ul>
+      <button
+        *ngIf="reasonIndex < reasons.length - 1"
+        type="button"
+        class="btn btn-soft"
+        (click)="revealReason()"
+      >
+        Reveal next
+      </button>
+    </section>
+
+    <!-- 6 Timeline -->
+    <section class="stage" *ngIf="stage.id === 'timeline'">
+      <h1 class="headline">Our timeline</h1>
+      <p class="support">A short map of how we got here.</p>
+      <ol class="timeline">
+        <li *ngFor="let item of timeline">
+          <strong>{{ item.date }}</strong>
+          <span>{{ item.text }}</span>
+        </li>
+      </ol>
+    </section>
+
+    <!-- 7 Quiz -->
+    <section class="stage" *ngIf="stage.id === 'quiz'">
+      <h1 class="headline">Love quiz</h1>
+      <ng-container *ngIf="quizIndex < quiz.length; else quizDone">
+        <p class="support">{{ quiz[quizIndex].prompt }}</p>
+        <div class="choice-stack">
+          <button
+            type="button"
+            class="btn btn-choice"
+            *ngFor="let option of quiz[quizIndex].options; let i = index"
+            (click)="answerQuiz(i)"
+            [disabled]="quizLocked"
+          >
+            {{ option }}
+          </button>
+        </div>
+        <p class="feedback" *ngIf="quizFeedback">{{ quizFeedback }}</p>
+      </ng-container>
+      <ng-template #quizDone>
+        <p class="support">
+          You scored {{ quizScore }}/{{ quiz.length }}. Either way — you’re my favorite answer.
+        </p>
+      </ng-template>
+    </section>
+
+    <!-- 8 Compliments -->
+    <section class="stage" *ngIf="stage.id === 'compliments'">
+      <h1 class="headline">Compliment machine</h1>
+      <p class="support">Spin for a little ego boost. You earned it.</p>
+      <div class="slot" [class.spinning]="complimentSpinning">
+        {{ compliments[complimentIndex] }}
+      </div>
+      <button type="button" class="btn btn-soft" (click)="spinCompliment()" [disabled]="complimentSpinning">
+        {{ complimentSpinning ? 'Spinning…' : 'Spin' }}
+      </button>
+    </section>
+
+    <!-- 9 Fortunes -->
+    <section class="stage" *ngIf="stage.id === 'fortunes'">
+      <h1 class="headline">Fortune cookies</h1>
+      <p class="support">Crack open at least two.</p>
+      <div class="tile-grid">
+        <button
+          type="button"
+          class="fortune"
+          *ngFor="let fortune of fortunes; let i = index"
+          [class.open]="openedFortunes.has(i)"
+          (click)="openFortune(i)"
+        >
+          <span *ngIf="!openedFortunes.has(i)">🥠 Tap</span>
+          <span *ngIf="openedFortunes.has(i)">{{ fortune }}</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 10 Scratch -->
+    <section class="stage" *ngIf="stage.id === 'scratch'">
+      <h1 class="headline">Scratch cards</h1>
+      <p class="support">Reveal at least two little prizes.</p>
+      <div class="tile-grid">
+        <button
+          type="button"
+          class="scratch"
+          *ngFor="let reward of scratchRewards; let i = index"
+          [class.revealed]="scratchedCards.has(i)"
+          (click)="scratchCard(i)"
+        >
+          <span *ngIf="!scratchedCards.has(i)">🎫 Scratch me</span>
+          <span *ngIf="scratchedCards.has(i)">{{ reward }}</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 11 Promises -->
+    <section class="stage" *ngIf="stage.id === 'promises'">
+      <h1 class="headline">Promise wall</h1>
+      <p class="support">Accept the ones that feel true — at least two.</p>
+      <div class="choice-stack">
+        <button
+          type="button"
+          class="btn btn-choice"
+          *ngFor="let promise of promises; let i = index"
+          [class.selected]="acceptedPromises.has(i)"
+          (click)="acceptPromise(i)"
+        >
+          {{ promise }}
+        </button>
+      </div>
+    </section>
+
+    <!-- 12 Love Catcher -->
+    <section class="stage" *ngIf="stage.id === 'catcher'">
+      <h1 class="headline">Love catcher</h1>
+      <p class="support">Catch 5 hearts. Tap fast.</p>
+      <p class="score">Caught: {{ catcherScore }}/5</p>
+      <div class="catcher-arena">
+        <button
+          type="button"
+          class="falling-heart"
+          *ngFor="let heart of catcherHearts"
+          [hidden]="heart.caught"
+          [style.left.%]="heart.left"
+          [style.animationDuration.s]="heart.duration"
+          (click)="catchHeart(heart.id, $event)"
+          (touchstart)="catchHeart(heart.id, $event)"
+          aria-label="Catch heart"
+        >
+          ❤️
+        </button>
+      </div>
+    </section>
+
+    <!-- 13 Adventures -->
+    <section class="stage" *ngIf="stage.id === 'adventures'">
+      <h1 class="headline">Future adventures</h1>
+      <p class="support">Pick what we should do next.</p>
+      <div class="tile-grid">
+        <button
+          type="button"
+          class="adventure"
+          *ngFor="let item of adventures; let i = index"
+          [class.selected]="selectedAdventures.has(i)"
+          (click)="toggleAdventure(i)"
+        >
+          <strong>{{ item.title }}</strong>
+          <span>{{ item.detail }}</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 14 Spin Wheel -->
+    <section class="stage" *ngIf="stage.id === 'wheel'">
+      <h1 class="headline">Spin the wheel</h1>
+      <p class="support">Whatever it lands on, you win me.</p>
+      <div class="wheel-wrap">
+        <div class="wheel-pointer"></div>
+        <div
+          class="wheel"
+          [style.transform]="'rotate(' + wheelRotation + 'deg)'"
+          [class.spinning]="wheelSpinning"
+        >
+          <div
+            class="wedge"
+            *ngFor="let prize of wheelPrizes; let i = index"
+            [style.transform]="'rotate(' + (i * 60) + 'deg) skewY(-30deg)'"
+          >
+            <span>{{ prize }}</span>
+          </div>
+        </div>
+      </div>
+      <p class="prize" *ngIf="wheelPrize">You won: {{ wheelPrize }}</p>
+      <button type="button" class="btn btn-soft" (click)="spinWheel()" [disabled]="wheelSpinning">
+        {{ wheelSpinning ? 'Spinning…' : wheelPrize ? 'Spin again' : 'Spin' }}
+      </button>
+    </section>
+
+    <!-- 15 Declaration -->
+    <section class="stage stage-finale" *ngIf="stage.id === 'declaration'">
+      <p class="brand brand-small">{{ brand }}</p>
+      <h1 class="headline">Syed Rukaiya, you are loved.</h1>
+      <p class="support">
+        For your smile, your big eyes, your curls, and that quietly beautiful heart.
+      </p>
+      <p class="closing">Forever yours.</p>
+    </section>
   </main>
+
+  <footer class="footer-bar" *ngIf="stage.id !== 'question' && stage.id !== 'declaration'">
+    <button
+      type="button"
+      class="btn btn-primary footer-btn"
+      (click)="next()"
+      [disabled]="!canContinue"
+    >
+      {{ continueLabel }}
+    </button>
+    <p class="footer-hint" *ngIf="!canContinue && stage.id !== 'welcome'">
+      Finish this moment to continue
+    </p>
+  </footer>
 </div>

@@ -1,27 +1,38 @@
-# ImageGenrator
+# MY_Dear_one
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.2.8.
+A playful 15-stage interactive love experience — tease them with a hard-to-click “No” button, then walk through memories, games, and a love letter.
 
-## Development server
+Inspired by [lovetale.app](https://lovetale.app/#demo).
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Stages
 
-## Code scaffolding
+1. Welcome  
+2. Love Question (runaway No)  
+3. Your Letter  
+4. Photo Memories  
+5. Reasons I Love You  
+6. Our Timeline  
+7. Love Quiz  
+8. Compliments  
+9. Fortune Cookies  
+10. Scratch Cards  
+11. Promise Wall  
+12. Love Catcher  
+13. Future Adventures  
+14. Spin Wheel  
+15. Declaration  
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Mobile-first and safe-area aware for phones.
 
-## Build
+## Run
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```bash
+npm install
+npm start
+```
 
-## Running unit tests
+Open `http://localhost:4200`.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Customize
 
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Edit names, letter, quiz, reasons, and more in `src/app/app.component.ts`.
